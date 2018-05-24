@@ -1,5 +1,5 @@
 # SimmilarityBetweenGeometries
-## (Implemented the following as the competency test for **Boost.Geometry** Gsoc '18)
+
 
 # **Pseudo code for finding Coupling Distance** <br />
 #(frechet distance for curve formed by discrete points)<br />
@@ -27,7 +27,7 @@
 >	end.<br />
 <br />
 //Reference:- Computing Discrete Fr ́echet Distance by Thomas Eiter and Heikki Mannila //
-//http://www.kr.tuwien.ac.at/staff/eiter/et-archive/cdtr9464.pdf//
+//http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.90.937//
 
 # How to use this header: 
   1. Clone/Download this directory (or the file "FrechetDistance.hpp")
