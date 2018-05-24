@@ -1,5 +1,6 @@
 /*  
-        Boost Competency Test (Gsoc '18)
+        Boost (Gsoc '18)
+        SimmilarityBetweenGeometries
         Author : Yaghyavardhan Sing Khangarot
         Institute: IIIT Hyderabad
 */
@@ -69,48 +70,18 @@ static inline ElementType min(ElementType a,ElementType b)
 	return (a<b)?a:b;
 }
 
-bool isSubSequence(char str1[], char str2[], int m, int n)
-{
-    // Base Cases
-    if (m == 0) return true;
-    if (n == 0) return false;
- 
-    // If last characters of two strings are matching
-    if (str1[m-1] == str2[n-1])
-        return isSubSequence(str1, str2, m-1, n-1);
- 
-    // If last characters are not matching
-    return isSubSequence(str1, str2, m, n-1);
-}
 
-//Calculating distance as per the Cartesian system
+//Calculating distance as per the Strategy Type
 template <typename Point>
-static inline double  Distance(Point const& P1,Point const& P2)
+static inline double Distance(Point const& p1, Point const& p2)
 {
-	std::string Str2=typeid(Point).name(),Str1="geographic",Str3="spherical";
-	bool flag1=isSubSequence(&Str1[0],&Str2[0],(int)Str1.length(),(int)Str2.length());
-	bool flag2=isSubSequence(&Str3[0],&Str2[0],(int)Str3.length(),(int)Str2.length());
+    typedef typename bg::strategy::distance::services::default_strategy
+              <
+                  bg::point_tag, bg::point_tag,
+                  Point, Point
+              >::type strategy_type;
 
-	if(flag1)
-	{
-		double Radius=6371; // in Kliometer
-		typedef  bg:: strategy :: distance :: haversine<double> HaverSineDistance;
-		return bg::distance(P1,P2,HaverSineDistance(Radius));
-	}
-	else if(flag2)
-	{
-		double Radius=1; // radius of sphere
-		typedef  bg:: strategy :: distance :: haversine<double> HaverSineDistance;
-		return bg::distance(P1,P2,HaverSineDistance(Radius));
-	}
-	else 
-	{
-
-		typedef  bg:: strategy :: distance :: pythagoras<double> PythagorasDistance;
-
-		return bg::distance(P1,P2,PythagorasDistance());
-	}	
-
+    return bg::distance(p1, p2, strategy_type());
 }
 
 template<typename LineString>
