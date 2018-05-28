@@ -17,9 +17,7 @@
 #include <boost/geometry/geometries/linestring.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
-#include <boost/array.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
+
 
 #include <boost/geometry/geometries/register/linestring.hpp>
 #include <boost/geometry/geometries/adapted/c_array.hpp>
@@ -65,7 +63,7 @@ int main(void)
     std::cout << dsv(ls2) << std::endl;
 
  	double FrechDis;
- 	FrechDis=FrechetDistance(ls1,ls2);
+ 	FrechDis= FrechetDistance :: FrechDist(ls1,ls2);
  	std::cout <<"FrechetDistance= " << FrechDis << std::endl;
     return 0;
 

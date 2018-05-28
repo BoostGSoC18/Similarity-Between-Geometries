@@ -49,8 +49,11 @@ static inline double Distance(Point const& p1, Point const& p2)
     return bg::distance(p1, p2, strategy_type());
 }
 
+
+namespace FrechetDistance
+{
 template<typename LineString>
-static inline double FrechetDistance(LineString ls1,LineString ls2)
+static inline double FrechDist(LineString ls1,LineString ls2)
 {
 	double Dis=0;
 	unsigned int  a = boost::size(ls1);
@@ -98,4 +101,6 @@ static inline double FrechetDistance(LineString ls1,LineString ls2)
 	Dis=CoupMat[a-1][b-1];
 	
 	return Dis;
+};
+
 }
