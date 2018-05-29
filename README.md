@@ -49,9 +49,28 @@ function CouplingMeasure(i, j): real;
 	return CouplingMeasure(p, q);
 	end.
 ```
-//Reference:- Computing Discrete Fr ́echet Distance by Thomas Eiter and Heikki Mannila //
-//http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.90.937//
+<b>Reference</b>:- [Computing Discrete Fr ́echet Distance by Thomas Eiter and Heikki Mannila](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.90.937)
 
-# How to use this header: 
+### Implementation Details for the Discrete Frechet Distance Algorithm
+
+I have implemented an iterative version of the algorithm and  incorporated the   `Cartesian, Spherical_Equatorial, Geographic Coordinate Systems`.I am deciding the strategy type  to calculate point-to-point distance using this patch of code :-
+```
+template <typename Point>
+static inline double Distance(Point const& p1, Point const& p2)
+{
+    typedef typename bg::strategy::distance::services::default_strategy
+              <
+                  bg::point_tag, bg::point_tag,
+                  Point, Point
+              >::type strategy_type;
+
+    return bg::distance(p1, p2, strategy_type());
+}
+```
+
+
+### How to use this header: 
   1. Clone/Download this directory (or the file "FrechetDistance.hpp")
-  1. Include the header in your code by specifying the absolute or relative path **( #include"/file_path/FrechetDistance.hpp")**
+  1. Include the header in your code by specifying the absolute or relative path **(#include"/file_path/FrechetDistance.hpp")**
+  
+ <b> Author By Yaghyavardhan Singh Khangarot </b>
