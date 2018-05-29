@@ -11,7 +11,8 @@
 #include <vector>
 #include <limits>
 
-#include "../FrechetDistance/DiscreteFrechetDistance.hpp"
+//#include "../FrechetDistance/DiscreteFrechetDistance.hpp"
+#include "../HausdorffDistance/DiscreteHausdorffDistance.hpp"
 
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
@@ -61,10 +62,14 @@ int main(void)
  	const double c[][2] = { {3.1, 3.1}, {4.9, 1.1}, {3.1, 1.9} };
  	append(ls2, c);
     std::cout << dsv(ls2) << std::endl;
-
- 	double FrechDis;
- 	FrechDis= FrechetDistance :: FrechDist(ls1,ls2);
- 	std::cout <<"FrechetDistance= " << FrechDis << std::endl;
+ 	/* double FrechDis;
+    FrechDis= FrechetDistance :: FrechDist(ls1,ls2);
+    std::cout <<"FrechetDistance= " << FrechDis << std::endl;
+    */
+    
+    double HausDis;
+    HausDis= HausdorffDistance :: HausDist(ls1,ls2);
+    std::cout <<"HausdorffDistance= " << HausDis << std::endl;
     return 0;
 
  }
