@@ -67,7 +67,31 @@ static inline double Distance(Point const& p1, Point const& p2)
     return bg::distance(p1, p2, strategy_type());
 }
 ```
+### Discrete Hausdorff Distance
+Let P and Q be two set of points in R^d. The directed Hausdorff distance from P to Q , denoted by h(P,Q), is `{max_{p in P} min_{q in Q} ||p-q||}`.
+The Hausdorff distance between P and Q, denoted by H(P,Q), is `{max{h(P,Q),h(Q,P)}}`.
+Intuitively, the function h(P, Q) finds the point p in P that is farthest from any point in Q and measures the distance from p to its nearest neighbor in Q.  Hausdorff distance is a measure of the mismatch between two point-sets. 
 
+```
+Pseudo code for Hausdorff distance for curve formed by discrete points
+Require: Two finite point sets P, Q.
+
+cmax = 0
+for x in P do
+	cmin = infinite 
+	for y in Q do
+		d = Distance(x ,y)
+		if d < cmin then
+			cmin = d
+		end if
+	end for
+	if cmin > cmax then
+		cmax = cmin
+	end if
+end for
+return cmax
+
+```
 
 ### How to use this header: 
   1. Clone/Download this directory (or the file "FrechetDistance.hpp")
