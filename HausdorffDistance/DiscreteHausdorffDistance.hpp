@@ -5,6 +5,9 @@
         Institute: IIIT Hyderabad
 */
 
+#ifndef BOOST_GEOMETRY_FRECHET_DISTANCE_HPP
+#define BOOST_GEOMETRY_FRECHET_DISTANCE_HPP
+
 #include <algorithm> 
 #include <iostream>
 #include <iterator>
@@ -17,9 +20,9 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/range.hpp>
+#include <boost/mpl/assert.hpp>
 
 
-namespace bnu = boost::numeric::ublas;
 namespace bg = boost::geometry;
 
 
@@ -37,8 +40,10 @@ static inline double Distance(Point const& p1, Point const& p2)
 }
 
 
+namespace boost { namespace geometry {
 namespace HausdorffDistance
 {
+
 template<typename LineString>
 static inline double HausDist(LineString ls1,LineString ls2)
 {
@@ -71,4 +76,9 @@ static inline double HausDist(LineString ls1,LineString ls2)
 	return DisMax;
 };
 
-}
+} // Hausdorff Distance
+
+}} // namespace boost::geometry
+
+
+#endif // BOOST_GEOMETRY_STRATEGIES_DISTANCE_HPP

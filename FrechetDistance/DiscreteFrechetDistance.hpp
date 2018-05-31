@@ -5,6 +5,9 @@
         Institute: IIIT Hyderabad
 */
 
+#ifndef BOOST_GEOMETRY_FRECHET_DISTANCE_HPP
+#define BOOST_GEOMETRY_FRECHET_DISTANCE_HPP
+
 #include <algorithm> 
 #include <iostream>
 #include <iterator>
@@ -17,9 +20,10 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/range.hpp>
+#include <boost/mpl/assert.hpp>
 
 
-namespace bnu = boost::numeric::ublas;
+
 namespace bg = boost::geometry;
 
 
@@ -50,8 +54,10 @@ static inline double Distance(Point const& p1, Point const& p2)
 }
 
 
-namespace FrechetDistance
-{
+namespace boost { namespace geometry {
+
+namespace FrechetDistance{
+
 template<typename LineString>
 static inline double FrechDist(LineString ls1,LineString ls2)
 {
@@ -68,7 +74,6 @@ static inline double FrechDist(LineString ls1,LineString ls2)
       CoupMat[i][j] = -1;
     
  	//findin the Coupling
- 	//calling Recursion to get the coupling distance
  	double NonFeasible=-100;
  	for(unsigned int i=0;i<a;i++)
  	{
@@ -103,4 +108,9 @@ static inline double FrechDist(LineString ls1,LineString ls2)
 	return Dis;
 };
 
-}
+} // namespace Frechet Distance
+
+}} // namespace boost::geometry
+
+
+#endif // BOOST_GEOMETRY_STRATEGIES_DISTANCE_HPP
