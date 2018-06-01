@@ -48,26 +48,26 @@ template<typename LineString>
 static inline double HausDist(LineString ls1,LineString ls2)
 {
 	double DisMax=0,DisMin;
+  double infinite = std::numeric_limits<double>::max();
 	unsigned int  a = boost::size(ls1);
  	std::cout <<"size of linestring1 ="<< a << std::endl;
  	unsigned int  b = boost::size(ls2);
  	std::cout << "size of linestring2 ="<< b << std::endl;
 
  	//findin the Coupling
- 	double NonFeasible=-100;
  	for(unsigned int i=0;i<a;i++)
  	{
     DisMin= std::numeric_limits<double>::max() ;
  		for(unsigned  int j=0;j<b;j++)
  		{
  			double DisTemp = Distance(bg::range::at(ls1,i),bg::range::at(ls2,j));
+      if(DisTemp < DisMax)
+        break; //Early Break
       if(DisTemp < DisMin)
-      {
         DisMin=DisTemp;
-      }
  		}
 
-    if (DisMin > DisMax)
+    if (DisMin > DisMax && infinite > DisMin)
     {
       DisMax = DisMin;
     }

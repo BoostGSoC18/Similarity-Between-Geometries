@@ -81,11 +81,14 @@ for x in P do
 	cmin = infinite 
 	for y in Q do
 		d = Distance(x ,y)
+		if d < cmax then
+			break
+		end if
 		if d < cmin then
 			cmin = d
 		end if
 	end for
-	if cmin > cmax then
+	if ( cmin > cmax AND inf > cmin ) then
 		cmax = cmin
 	end if
 end for
