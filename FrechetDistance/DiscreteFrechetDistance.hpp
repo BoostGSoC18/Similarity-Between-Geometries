@@ -20,10 +20,29 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include <boost/range.hpp>
-#include <boost/mpl/assert.hpp>
+#include <boost/geometry/geometries/concepts/check.hpp>
+#include <boost/assert.hpp>
 
 
+template <typename size_type,typename result_type>
+class coup_mat
+{
+public:
+    coup_mat(size_type w, size_type h)
+        : m_data(w * h,-1), m_width(w), m_height(h)
+    {}
 
+    result_type & operator()(size_type i, size_type j)
+    {
+        BOOST_ASSERT(i < m_width && j < m_height);
+        return m_data[j * m_width + i];
+    }
+
+private:
+    std::vector<result_type> m_data;
+    size_type m_width;
+    size_type m_height;
+};
 
 //Calculating distance as per the Strategy Type
 template <typename Point>
@@ -43,53 +62,51 @@ namespace boost { namespace geometry {
 
 namespace algorithms{
 
-template<typename Geometry1,typename Geometry2>
-static inline double frechet_distance(Geometry1 const& ls1,Geometry2 const& ls2)
+template<typename geometry1,typename geometry2>
+static inline double frechet_distance(geometry1 const& ls1,geometry2 const& ls2)
 {
-  typedef typename distance_result<Geometry1, Geometry2>::type result_type;
-  typedef typename boost::range_size<Geometry1>::type size_type;
+  typedef typename distance_result<geometry1, geometry2>::type result_type;
+  typedef typename boost::range_size<geometry1>::type size_type;
 	
+  boost::geometry::detail::throw_on_empty_input(ls1);
+  boost::geometry::detail::throw_on_empty_input(ls2);
+
   size_type  a = boost::size(ls1);
   size_type  b = boost::size(ls2);
 
-  result_type const uninitialized = -1;
-  result_type const not_feasible = -100;
 
- 	//Coupling Matrix CoupMat(a+1,b+1,-1);
-  result_type CoupMat[a][b];
-  for(size_type i = 0; i <a; i++)
-    for(size_type j = 0; j <b; j++)
-      CoupMat[i][j] = uninitialized;
-    
+ 	//Coupling Matrix CoupMat(a,b,-1);
+  coup_mat<size_type,result_type>  coup_matrix(a,b);
+
+  result_type const not_feasible = -100;
  	//findin the Coupling
  	for(size_type i=0;i<a;i++)
  	{
  		for(size_type j=0;j<b;j++)
  		{
  			if(i==0 && j==0)
- 				CoupMat[i][j]= Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j));
+ 				coup_matrix(i,j)= Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j));
  			else if(i==0 && j>0)
- 				CoupMat[i][j]=(std::max)(CoupMat[i][j-1],Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
+ 				coup_matrix(i,j)=(std::max)(coup_matrix(i,j-1),Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
  			else if(i>0 && j==0)
- 				CoupMat[i][j]=(std::max)(CoupMat[i-1][j],Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
+ 				coup_matrix(i,j)=(std::max)(coup_matrix(i-1,j),Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
  			else if(i>0 && j>0)
- 				CoupMat[i][j]=(std::max)((std::min)((std::min)(CoupMat[i][j-1],CoupMat[i-1][j]),CoupMat[i-1][j-1]),Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
+ 				coup_matrix(i,j)=(std::max)((std::min)((std::min)(coup_matrix(i,j-1),coup_matrix(i-1,j)),coup_matrix(i-1,j-1)),Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
  			else
- 				CoupMat[i][j]=not_feasible;
+ 				coup_matrix(i,j)=not_feasible;
  		}
  	}
 
  	//Print CoupLing Matrix
-
  	for(size_type i = 0; i <a; i++)
   {
     for(size_type j = 0; j <b; j++)
-      std::cout << CoupMat[i][j] << " ";
+      std::cout << coup_matrix(i,j) << " ";
     std::cout << std::endl;
   }
 	
 	//Final Coupling Distance
-	return CoupMat[a-1][b-1];
+	return coup_matrix(a-1,b-1);
 };
 
 } // namespace algorithms
