@@ -22,7 +22,16 @@
 #include <boost/range.hpp>
 #include <boost/geometry/geometries/concepts/check.hpp>
 #include <boost/assert.hpp>
+#include <boost/geometry/core/tag.hpp>
+#include <boost/geometry/core/tags.hpp>
+#include <boost/geometry/util/bare_type.hpp>
 
+
+
+
+namespace boost { namespace geometry {
+
+namespace algorithms{
 
 template <typename size_type,typename result_type>
 class coup_mat
@@ -45,29 +54,34 @@ private:
 };
 
 //Calculating distance as per the Strategy Type
-template <typename Point>
-static inline double Distance(Point const& p1, Point const& p2)
+template <typename Point,typename Strategy>
+static inline double frechet_distance(Point const& p1, Point const& p2,Strategy const& strategy_type)
 {
-    typedef typename boost::geometry::strategy::distance::services::default_strategy
-              <
-                  boost::geometry::point_tag, boost::geometry::point_tag,
-                  Point, Point
-              >::type strategy_type;
-
-    return boost::geometry::distance(p1, p2, strategy_type());
+    return boost::geometry::distance(p1, p2, strategy_type);
 }
-
-
-namespace boost { namespace geometry {
-
-namespace algorithms{
 
 template<typename geometry1,typename geometry2>
 static inline double frechet_distance(geometry1 const& ls1,geometry2 const& ls2)
 {
   typedef typename distance_result<geometry1, geometry2>::type result_type;
   typedef typename boost::range_size<geometry1>::type size_type;
-	
+	typedef typename core_dispatch::point_type
+        <
+            typename tag<geometry1>::type,
+            typename boost::geometry::util::bare_type<geometry1>::type
+        >::type point_type1;
+  typedef typename boost::geometry::strategy::distance::services::default_strategy
+              <
+                  boost::geometry::point_tag, boost::geometry::point_tag,
+                  point_type1, point_type1
+              >::type strategy_type;
+
+
+  #ifdef BOOST_GEOMETRY_DETAIL_DEBUG_FRECHET_OR_SOMETHING
+  std::cout << typeid(point_type1).name() << std::endl;
+  std::cout << typeid(strategy_type).name() << std::endl;
+  #endif
+
   boost::geometry::detail::throw_on_empty_input(ls1);
   boost::geometry::detail::throw_on_empty_input(ls2);
 
@@ -85,13 +99,17 @@ static inline double frechet_distance(geometry1 const& ls1,geometry2 const& ls2)
  		for(size_type j=0;j<b;j++)
  		{
  			if(i==0 && j==0)
- 				coup_matrix(i,j)= Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j));
+ 				coup_matrix(i,j)= 
+        frechet_distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j),strategy_type());
  			else if(i==0 && j>0)
- 				coup_matrix(i,j)=(std::max)(coup_matrix(i,j-1),Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
+ 				coup_matrix(i,j)=
+        (std::max)(coup_matrix(i,j-1),frechet_distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j),strategy_type()));
  			else if(i>0 && j==0)
- 				coup_matrix(i,j)=(std::max)(coup_matrix(i-1,j),Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
+ 				coup_matrix(i,j)=
+        (std::max)(coup_matrix(i-1,j),frechet_distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j),strategy_type()));
  			else if(i>0 && j>0)
- 				coup_matrix(i,j)=(std::max)((std::min)((std::min)(coup_matrix(i,j-1),coup_matrix(i-1,j)),coup_matrix(i-1,j-1)),Distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j)));
+ 				coup_matrix(i,j)=
+        (std::max)((std::min)((std::min)(coup_matrix(i,j-1),coup_matrix(i-1,j)),coup_matrix(i-1,j-1)),frechet_distance(boost::geometry::range::at(ls1,i),boost::geometry::range::at(ls2,j),strategy_type()));
  			else
  				coup_matrix(i,j)=not_feasible;
  		}

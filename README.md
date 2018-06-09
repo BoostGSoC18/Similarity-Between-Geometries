@@ -97,7 +97,7 @@ return cmax
 ```
 
 ### How to use this header: 
-  1. Clone/Download this directory (or the file "FrechetDistance.hpp")
+  1. Clone/Download this directory (or the file "DiscreteFrechetDistance.hpp")
   1. Include the header in your code by specifying the absolute or relative path **(#include"/file_path/FrechetDistance.hpp")**
   
  <b> Author By Yaghyavardhan Singh Khangarot </b>
