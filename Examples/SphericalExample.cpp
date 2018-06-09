@@ -11,8 +11,8 @@
 #include <vector>
 #include <limits>
 
-//#include "../FrechetDistance/DiscreteFrechetDistance.hpp"
-#include "../HausdorffDistance/DiscreteHausdorffDistance.hpp"
+#include "../FrechetDistance/DiscreteFrechetDistance.hpp"
+//#include "../HausdorffDistance/DiscreteHausdorffDistance.hpp"
 
 
 #include <boost/geometry/geometry.hpp>
@@ -56,21 +56,26 @@ int main(void)
     append(ls1, lp);
     append(ls1,make<point_2d>(4.5,7.0));
 
-    // Lines can be streamed using DSV (delimiter separated values)
-    std::cout << dsv(ls1) << std::endl;
     
     const double c[][2] = { {3.1, 3.1}, {4.9, 1.1}, {3.1, 1.9} };
     append(ls2, c);
-    std::cout << dsv(ls2) << std::endl;
 
-   /* double FrechDis;
-    FrechDis= FrechetDistance :: FrechDist(ls1,ls2);
-    std::cout <<"FrechetDistance= " << FrechDis << std::endl;
-    */
-    double HausDis;
-    HausDis= HausdorffDistance :: HausDist(ls1,ls2);
-    std::cout <<"HausdorffDistance= " << HausDis << std::endl;
+// Lines can be streamed using DSV (delimiter separated values)
+    #ifdef BOOST_GEOMETRY_DETAIL_DEBUG_FRECHET_OR_SOMETHING
+    std::cout << dsv(ls1) << std::endl;
+    std::cout << dsv(ls2) << std::endl;
+    #endif
     
+
+    double FrechDis;
+    FrechDis= bg::algorithms::frechet_distance(ls1,ls2);
+    std::cout <<"FrechetDistance= " << FrechDis << std::endl;
+    
+    /*
+    double HausDis;
+    HausDis= bg::algorithms::hausdorff_distance(ls1,ls2);
+    std::cout <<"HausdorffDistance= " << HausDis << std::endl;
+    */
     return 0;
 
  }
