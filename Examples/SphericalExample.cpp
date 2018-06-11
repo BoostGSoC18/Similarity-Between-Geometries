@@ -11,9 +11,8 @@
 #include <vector>
 #include <limits>
 
-#include "../FrechetDistance/DiscreteFrechetDistance.hpp"
-//#include "../HausdorffDistance/DiscreteHausdorffDistance.hpp"
-
+//#include "../include/boost/geometry/algorithms/DiscreteFrechetDistance.hpp"
+#include "../include/boost/geometry/algorithms/DiscreteHausdorffDistance.hpp"
 
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
