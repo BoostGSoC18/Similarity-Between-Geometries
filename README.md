@@ -29,25 +29,31 @@ Function dF(P, Q): real;
 input:polygonal curves P= (u1, . . . , up) and Q= (v1, . . . , vq).
 return:δdF(P, Q)
 ca:array[1..p,1..q] of real;
-function CouplingMeasure(i, j): real;
-	begin
-		if ca(i, j)>−1 then return ca(i, j)
-		elsif i= 1 and j= 1 then ca(i, j) :=d(u1, v1)
-		elsif i >1 and j= 1 then ca(i, j) := max{CouplingMeasure(i−1,1), d(ui, v1)}
-		elsif i= 1 and j >1 then ca(i, j) := max{CouplingMeasure(1, j−1), d(u1, vj)}
-		elsif i >1 and j >1 then ca(i, j) :=max{min(CouplingMeasure(i−1, j), CouplingMeasure(i−1, j−1), CouplingMeasure(i, j−1)), d(ui, vj)}
-		else ca(i, j)=∞
-	return ca(i, j);
-	end;
-  
- function ComputeFrechetDistance() 
+function InitializeCouplineMatrix() 
 	begin
 	for i = 1 to p
 	do
 		for j= 1 to q 
 		do ca(i, j) :=−1.0;
-	return CouplingMeasure(p, q);
 	end.
+	
+function CouplingMeasure(): real;
+	begin
+	for i = 1 to p
+	do 
+		for j = 1 to q
+		do
+			if i= 1 and j= 1 then ca(i, j) :=d(u1, v1)
+			elsif i >1 and j= 1 then ca(i, j) := max{CouplingMatrix(i−1,1), d(ui, v1)}
+			elsif i= 1 and j >1 then ca(i, j) := max{CouplingMatrix(1, j−1), d(u1, vj)}
+			elsif i >1 and j >1 then ca(i, j) :=max{min(CouplingMatrix(i−1, j), CouplingMatrix(i−1, j−1), 								CouplingMatrix(i, j−1)), d(ui, vj)}
+			else ca(i, j)=∞      "Not feasible"
+		end
+	end
+	return CouplingMatrix(p, q);
+	end;
+  
+ 
 ```
 <b>Reference</b>:- [Computing Discrete Fr ́echet Distance by Thomas Eiter and Heikki Mannila](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.90.937)
 
