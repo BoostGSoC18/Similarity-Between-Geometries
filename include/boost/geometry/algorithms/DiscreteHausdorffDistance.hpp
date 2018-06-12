@@ -36,24 +36,26 @@ static inline double hausdorff_distance(Point const& p1, Point const& p2,Strateg
 template<typename Geometry1 ,typename Geometry2>
 static inline double hausdorff_distance(Geometry1 ls1,Geometry2 ls2)
 {
-  typedef typename distance_result<Geometry1, Geometry2>::type result_type;
+  typedef typename boost::geometry::distance_result
+    <
+        typename geometry::point_type<geometry1>::type,
+        typename geometry::point_type<geometry2>::type
+    >::type result_type; 
+
   typedef typename boost::range_size<Geometry1>::type size_type;
-  typedef typename core_dispatch::point_type
-        <
-            typename tag<Geometry1>::type,
-            typename boost::geometry::util::bare_type<Geometry1>::type
-        >::type point_type1;
+  
   typedef typename boost::geometry::strategy::distance::services::default_strategy
               <
                   boost::geometry::point_tag, boost::geometry::point_tag,
-                  point_type1, point_type1
+                  typename geometry::point_type<geometry1>::type,
+                  typename geometry::point_type<geometry2>::type
               >::type strategy_type;
 
   boost::geometry::detail::throw_on_empty_input(ls1);
   boost::geometry::detail::throw_on_empty_input(ls2);
   
 	result_type DisMax=0,DisMin;
-  result_type infinite = std::numeric_limits<double>::max();
+  result_type const infinite = std::numeric_limits<double>::max();
 	
   size_type  a = boost::size(ls1);
  	std::cout <<"size of linestring1 ="<< a << std::endl;

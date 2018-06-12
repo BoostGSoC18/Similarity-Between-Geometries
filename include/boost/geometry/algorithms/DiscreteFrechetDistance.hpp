@@ -31,7 +31,6 @@
 
 namespace boost { namespace geometry {
 
-namespace algorithms{
 
 template <typename size_type,typename result_type>
 class coup_mat
@@ -53,6 +52,8 @@ private:
     size_type m_height;
 };
 
+namespace algorithms{
+
 //Calculating distance as per the Strategy Type
 template <typename Point,typename Strategy>
 static inline double frechet_distance(Point const& p1, Point const& p2,Strategy const& strategy_type)
@@ -63,17 +64,19 @@ static inline double frechet_distance(Point const& p1, Point const& p2,Strategy 
 template<typename geometry1,typename geometry2>
 static inline double frechet_distance(geometry1 const& ls1,geometry2 const& ls2)
 {
-  typedef typename distance_result<geometry1, geometry2>::type result_type;
+  typedef typename boost::geometry::distance_result
+    <
+        typename geometry::point_type<geometry1>::type,
+        typename geometry::point_type<geometry2>::type
+    >::type result_type;
+
   typedef typename boost::range_size<geometry1>::type size_type;
-	typedef typename core_dispatch::point_type
-        <
-            typename tag<geometry1>::type,
-            typename boost::geometry::util::bare_type<geometry1>::type
-        >::type point_type1;
+
   typedef typename boost::geometry::strategy::distance::services::default_strategy
               <
                   boost::geometry::point_tag, boost::geometry::point_tag,
-                  point_type1, point_type1
+                  typename geometry::point_type<geometry1>::type,
+                  typename geometry::point_type<geometry2>::type
               >::type strategy_type;
 
 
@@ -85,8 +88,8 @@ static inline double frechet_distance(geometry1 const& ls1,geometry2 const& ls2)
   boost::geometry::detail::throw_on_empty_input(ls1);
   boost::geometry::detail::throw_on_empty_input(ls2);
 
-  size_type  a = boost::size(ls1);
-  size_type  b = boost::size(ls2);
+  size_type const a = boost::size(ls1);
+  size_type const b = boost::size(ls2);
 
 
  	//Coupling Matrix CoupMat(a,b,-1);
