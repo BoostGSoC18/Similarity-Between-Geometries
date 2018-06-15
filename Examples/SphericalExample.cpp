@@ -12,7 +12,7 @@
 #include <limits>
 
 //#include "../include/boost/geometry/algorithms/DiscreteFrechetDistance.hpp"
-#include "../include/boost/geometry/algorithms/DiscreteHausdorffDistance.hpp"
+#include "../include/boost/geometry/algorithms/HausdorffDistance.hpp"
 
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
@@ -42,9 +42,6 @@ int main(void)
     typedef model::linestring<point_2d> linestring_2d;
     linestring_2d ls1,ls2;
 
-    typedef bg::coordinate_system<point_2d>::type CordType;
-    std::cout << typeid(CordType).name() << std::endl;
-
 
     // points can be created using "make" and added to a linestring using the std:: "push_back"
     ls1.push_back(make<point_2d>(1.1, 1.1));
@@ -61,20 +58,22 @@ int main(void)
 
 // Lines can be streamed using DSV (delimiter separated values)
     #ifdef BOOST_GEOMETRY_DETAIL_DEBUG_FRECHET_OR_SOMETHING
+    typedef bg::coordinate_system<point_2d>::type CordType;
+    std::cout << typeid(CordType).name() << std::endl;
     std::cout << dsv(ls1) << std::endl;
     std::cout << dsv(ls2) << std::endl;
     #endif
     
-
+    /*
     double FrechDis;
     FrechDis= bg::algorithms::frechet_distance(ls1,ls2);
     std::cout <<"FrechetDistance= " << FrechDis << std::endl;
-    
-    /*
-    double HausDis;
-    HausDis= bg::algorithms::hausdorff_distance(ls1,ls2);
-    std::cout <<"HausdorffDistance= " << HausDis << std::endl;
     */
+    
+    double HausDis;
+    HausDis= bg::hausdorff_distance(ls1,ls2);
+    std::cout <<"HausdorffDistance= " << HausDis << std::endl;
+
     return 0;
 
  }

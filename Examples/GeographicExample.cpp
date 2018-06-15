@@ -11,8 +11,8 @@
 #include <vector>
 #include <limits>
 
-#include "../include/boost/geometry/algorithms/DiscreteFrechetDistance.hpp"
-//#include "../include/boost/geometry/algorithms/DiscreteHausdorffDistance.hpp"
+//#include "../include/boost/geometry/algorithms/DiscreteFrechetDistance.hpp"
+#include "../include/boost/geometry/algorithms/HausdorffDistance.hpp"
 
 
 #include <boost/geometry/geometry.hpp>
@@ -61,16 +61,15 @@ int main(void)
     std::cout << dsv(ls2) << std::endl;
     #endif
 
- 	
+ 	/*
     double FrechDis;
     FrechDis= bg::algorithms::frechet_distance(ls1,ls2);
     std::cout <<"FrechetDistance= " << FrechDis << std::endl;
-    
-    /*
-    double HausDis;
-    HausDis= bg::algorithms::hausdorff_distance(ls1,ls2);
-    std::cout <<"HausdorffDistance= " << HausDis << std::endl;
     */
+    
+    double HausDis;
+    HausDis= bg::hausdorff_distance(ls1,ls2);
+    std::cout <<"HausdorffDistance= " << HausDis << std::endl;
     return 0;
     
  }
