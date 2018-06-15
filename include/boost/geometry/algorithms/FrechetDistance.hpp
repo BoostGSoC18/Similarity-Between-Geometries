@@ -25,8 +25,28 @@ namespace boost { namespace geometry
 {
 
 #ifndef DOXYGEN_NO_DETAIL
-namespace detail { namespace hausdorff_distance
+namespace detail { namespace frechet_distance
 {
+
+template <typename size_type,typename result_type>
+class coup_mat
+{
+public:
+    coup_mat(size_type w, size_type h)
+        : m_data(w * h,-1), m_width(w), m_height(h)
+    {}
+
+    result_type & operator()(size_type i, size_type j)
+    {
+        BOOST_ASSERT(i < m_width && j < m_height);
+        return m_data[j * m_width + i];
+    }
+
+private:
+    std::vector<result_type> m_data;
+    size_type m_width;
+    size_type m_height;
+};
 
 struct linestring_linestring
 {
@@ -54,37 +74,54 @@ struct linestring_linestring
             >::type result_type;
         typedef typename boost::range_size<Linestring1>::type size_type;
         
-        result_type DisMax=0,DisMin;
-        result_type const infinite = std::numeric_limits<double>::max();
+
         boost::geometry::detail::throw_on_empty_input(ls1);
         boost::geometry::detail::throw_on_empty_input(ls2);
-        size_type  a = boost::size(ls1);
-        size_type  b = boost::size(ls2);
 
-        //findin the HausdorffDistance
+        size_type const a = boost::size(ls1);
+        size_type const b = boost::size(ls2);
+
+
+        //Coupling Matrix CoupMat(a,b,-1);
+        coup_mat<size_type,result_type>  coup_matrix(a,b);
+
+        result_type const not_feasible = -100;
+        //findin the Coupling
         for(size_type i=0;i<a;i++)
         {
-            DisMin= std::numeric_limits<result_type>::max() ;
-                for(size_type j=0;j<b;j++)
-                {
-                    result_type DisTemp = geometry::distance(range::at(ls1, 0), range::at(ls2, 0), strategy);
-                    if(DisTemp < DisMax)
-                        break; //Early Break
-                    if(DisTemp < DisMin)
-                        DisMin=DisTemp;
-                }
-
-            if (DisMin > DisMax && infinite > DisMin)
+            for(size_type j=0;j<b;j++)
             {
-              DisMax = DisMin;
+                if(i==0 && j==0)
+                    coup_matrix(i,j)= 
+                    geometry::distance(range::at(ls1,i),range::at(ls2,j),strategy);
+                else if(i==0 && j>0)
+                    coup_matrix(i,j)=
+                    (std::max)(coup_matrix(i,j-1),geometry::distance(range::at(ls1,i),range::at(ls2,j),strategy));
+                else if(i>0 && j==0)
+                    coup_matrix(i,j)=
+                    (std::max)(coup_matrix(i-1,j),geometry::distance(range::at(ls1,i),range::at(ls2,j),strategy));
+                else if(i>0 && j>0)
+                    coup_matrix(i,j)=
+                    (std::max)((std::min)((std::min)(coup_matrix(i,j-1),coup_matrix(i-1,j)),coup_matrix(i-1,j-1)),geometry::distance(range::at(ls1,i),range::at(ls2,j),strategy));
+                else
+                    coup_matrix(i,j)=not_feasible;
             }
         }
-        
-        return DisMax;
+
+            //Print CoupLing Matrix
+        for(size_type i = 0; i <a; i++)
+        {
+            for(size_type j = 0; j <b; j++)
+            std::cout << coup_matrix(i,j) << " ";
+            std::cout << std::endl;
+        }
+            
+            //Final Coupling Distance
+        return coup_matrix(a-1,b-1);
     }
 };
 
-}} // namespace detail::hausdorff_distance
+}} // namespace detail::frechet_distance
 #endif // DOXYGEN_NO_DETAIL
 
 #ifndef DOXYGEN_NO_DISPATCH
@@ -100,13 +137,13 @@ template
     typename Tag1 = typename tag<Geometry1>::type,
     typename Tag2 = typename tag<Geometry2>::type
 >
-struct hausdorff_distance : not_implemented<Tag1, Tag2>
+struct frechet_distance : not_implemented<Tag1, Tag2>
 {};
 
 // Specialization for linestrings using your implementation above
 template <typename Linestring1, typename Linestring2>
-struct hausdorff_distance<Linestring1,Linestring2,linestring_tag,linestring_tag>
-    : detail::hausdorff_distance::linestring_linestring
+struct frechet_distance<Linestring1,Linestring2,linestring_tag,linestring_tag>
+    : detail::frechet_distance::linestring_linestring
 {};
 
 } // namespace dispatch
@@ -120,9 +157,9 @@ inline typename distance_result
             typename point_type<Geometry2>::type,
             Strategy
         >::type
-hausdorff_distance(Geometry1 const& g1, Geometry2 const& g2, Strategy const& strategy)
+frechet_distance(Geometry1 const& g1, Geometry2 const& g2, Strategy const& strategy)
 {
-    return dispatch::hausdorff_distance<Geometry1, Geometry2>::apply(g1, g2, strategy);
+    return dispatch::frechet_distance<Geometry1, Geometry2>::apply(g1, g2, strategy);
 }
 
 // Algorithm overload using default Pt-Pt distance strategy
@@ -132,7 +169,7 @@ inline typename distance_result
             typename point_type<Geometry1>::type,
             typename point_type<Geometry2>::type
         >::type
-hausdorff_distance(Geometry1 const& g1, Geometry2 const& g2)
+frechet_distance(Geometry1 const& g1, Geometry2 const& g2)
 {
     typedef typename strategy::distance::services::default_strategy
               <
@@ -141,7 +178,7 @@ hausdorff_distance(Geometry1 const& g1, Geometry2 const& g2)
                   typename point_type<Geometry2>::type
               >::type strategy_type;
     
-    return hausdorff_distance(g1, g2, strategy_type());
+    return frechet_distance(g1, g2, strategy_type());
 }
 
 }} // namespace boost::geometry
