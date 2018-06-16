@@ -6,7 +6,11 @@
 */
 
 #include <algorithm> 
+
+#ifdef BOOST_GEOMETRY_DEBUG_FRECHET_DISTANCE
 #include <iostream>
+#endif
+
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -57,15 +61,7 @@ struct linestring_linestring
             typename point_type<Linestring2>::type,
             Strategy
         >::type apply(Linestring1 const& ls1, Linestring2 const& ls2, Strategy const& strategy)
-    {
-        // ************************************************
-        // Here goes your implementation for linestrings
-        // ************************************************
-        // Strategy is Pt-Pt distance strategy
-        // when you want to get distance between 2 points you call:
-        // dist = geometry::distance(p1, p2, strategy);
-        // e.g.:
-        
+    {   
         typedef typename distance_result
             <
                 typename point_type<Linestring1>::type,
@@ -86,7 +82,7 @@ struct linestring_linestring
         coup_mat<size_type,result_type>  coup_matrix(a,b);
 
         result_type const not_feasible = -100;
-        //findin the Coupling
+        //findin the Coupling Measure
         for(size_type i=0;i<a;i++)
         {
             for(size_type j=0;j<b;j++)
@@ -108,15 +104,16 @@ struct linestring_linestring
             }
         }
 
-            //Print CoupLing Matrix
+        #ifdef BOOST_GEOMETRY_DEBUG_FRECHET_DISTANCE
+        //Print CoupLing Matrix
         for(size_type i = 0; i <a; i++)
         {
             for(size_type j = 0; j <b; j++)
             std::cout << coup_matrix(i,j) << " ";
             std::cout << std::endl;
         }
+        #endif
             
-            //Final Coupling Distance
         return coup_matrix(a-1,b-1);
     }
 };
@@ -127,9 +124,6 @@ struct linestring_linestring
 #ifndef DOXYGEN_NO_DISPATCH
 namespace dispatch
 {
-
-// Implementation's default entry point
-// instantiated if it's not specialized (dispatched) for specific input
 template
 <
     typename Geometry1,
@@ -139,8 +133,6 @@ template
 >
 struct frechet_distance : not_implemented<Tag1, Tag2>
 {};
-
-// Specialization for linestrings using your implementation above
 template <typename Linestring1, typename Linestring2>
 struct frechet_distance<Linestring1,Linestring2,linestring_tag,linestring_tag>
     : detail::frechet_distance::linestring_linestring

@@ -6,7 +6,11 @@
 */
 
 #include <algorithm> 
+
+#ifdef BOOST_GEOMETRY_DEBUG_FRECHET_DISTANCE
 #include <iostream>
+#endif
+
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -38,13 +42,6 @@ struct linestring_linestring
             Strategy
         >::type apply(Linestring1 const& ls1, Linestring2 const& ls2, Strategy const& strategy)
     {
-        // ************************************************
-        // Here goes your implementation for linestrings
-        // ************************************************
-        // Strategy is Pt-Pt distance strategy
-        // when you want to get distance between 2 points you call:
-        // dist = geometry::distance(p1, p2, strategy);
-        // e.g.:
         
         typedef typename distance_result
             <
@@ -54,33 +51,36 @@ struct linestring_linestring
             >::type result_type;
         typedef typename boost::range_size<Linestring1>::type size_type;
         
-        result_type DisMax=0,DisMin;
+        result_type dis_max=0,dis_min;
         result_type const infinite = std::numeric_limits<double>::max();
         boost::geometry::detail::throw_on_empty_input(ls1);
         boost::geometry::detail::throw_on_empty_input(ls2);
         size_type  a = boost::size(ls1);
         size_type  b = boost::size(ls2);
 
-        //findin the HausdorffDistance
+        //Computing the HausdorffDistance
         for(size_type i=0;i<a;i++)
         {
-            DisMin= std::numeric_limits<result_type>::max() ;
+            bool is_dis_min_set = false;
                 for(size_type j=0;j<b;j++)
                 {
-                    result_type DisTemp = geometry::distance(range::at(ls1, 0), range::at(ls2, 0), strategy);
-                    if(DisTemp < DisMax)
+                    result_type dis_temp = geometry::distance(range::at(ls1, i), range::at(ls2, j), strategy);
+                    if(dis_temp < dis_max)
                         break; //Early Break
-                    if(DisTemp < DisMin)
-                        DisMin=DisTemp;
+                    if(!is_dis_min_set || dis_temp < dis_min)
+                    {    
+                        dis_min=dis_temp;
+                        is_dis_min_set = true;
+                    }
                 }
 
-            if (DisMin > DisMax && infinite > DisMin)
+            if (dis_min > dis_max && is_dis_min_set)
             {
-              DisMax = DisMin;
+              dis_max = dis_min;
             }
         }
         
-        return DisMax;
+        return dis_max;
     }
 };
 
@@ -90,9 +90,6 @@ struct linestring_linestring
 #ifndef DOXYGEN_NO_DISPATCH
 namespace dispatch
 {
-
-// Implementation's default entry point
-// instantiated if it's not specialized (dispatched) for specific input
 template
 <
     typename Geometry1,
