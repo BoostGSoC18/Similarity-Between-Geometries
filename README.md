@@ -101,6 +101,35 @@ end for
 return cmax
 
 ```
+### Hausdorff Distance Extension for range-multi_range and multi_range-multi_range
+
+```
+For range-multi_range
+
+input: Range(rng);Multi_range(Mrng)
+
+for each Range(rng_i)  in Mrng:
+	do 
+		temp_dis=hausdorff_distance(rng_i,rng);
+		if temp_dis > max_dis
+			max_dis = temp_dis;             //max_dis initialized as 0.
+	end
+return max_dis.
+```
+
+```
+For multi_range-multi_range
+
+input:Multi_range(Mrng1);Multi_range(Mrng2)
+
+for each Range(rng_i) in Mrng1:
+	do
+		temp_dis=range-multi_range::hausdorff_distance(rng_i,Mrng2);
+		if temp_dis > max_dis
+			max_dis = temp_dis;             //max_dis initialized as 0.
+	end
+return max_dis.
+```
 
 ### How to use this header: 
   1. Clone/Download this directory (or the file "DiscreteFrechetDistance.hpp")
