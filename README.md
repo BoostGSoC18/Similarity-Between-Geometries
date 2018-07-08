@@ -101,6 +101,26 @@ end for
 return cmax
 
 ```
+```
+Discrete Hausdorff Distance Using R-tree
+        
+result_type dis_max=0;
+typedef bgi::rtree<point_t, bgi::linear<4> > rtree_type;
+rtree_type rtree(boost::begin(r2), boost::end(r2));
+point_t res;
+
+for(size_type i=0;i<a;i++)
+{
+	size_type found= rtree.query(bgi::nearest(range::at(r1, i),1), &res);	
+	result_type dis_min=geometry::distance(range::at(r1,i),res);
+	if (dis_min > dis_max )	
+	{
+	dis_max = dis_min;
+	}
+}
+        
+return dis_max;
+```
 ### Hausdorff Distance Extension for range-multi_range and multi_range-multi_range
 
 ```
@@ -132,7 +152,20 @@ return max_dis.
 ```
 
 ### How to use this header: 
-  1. Clone/Download this directory (or the file "DiscreteFrechetDistance.hpp")
-  1. Include the header in your code by specifying the absolute or relative path **(#include"/file_path/FrechetDistance.hpp")**
+  1. Include the header in your code by specifying
+  **(#include  <boost/geometry/algorthms/frechet_distance.hpp")**
+	and call the function as
+	```
+	result_type h_distance = bg::hausdorff_distance(geometry1,geometry2);
+	or
+	result_type h_distance = bg::hausdorff_distance(geometry1,geometry2,strategy);
+	```
+  **(#include <boost/geometry/algorithms/hausdorff_distance.hpp>)**
+  	and call the function as
+	```
+	result_type f_distance = bg::frechet_distance(geometry1,geometry2);
+	or
+	result_type f_distance = bg::frechet_distance(geometry1,geometry2,strategy);
+	```
   
  <b> Author By Yaghyavardhan Singh Khangarot </b>
