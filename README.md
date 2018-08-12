@@ -273,7 +273,8 @@ This clearly show that for geometries having size less than 10 Iterative method 
 	or
 	result_type f_distance = bg::frechet_distance(geometry1,geometry2,strategy);
 	```
+	
 or just use
-  **(##include <boost/geometry.hpp>)*
+  **(#include <boost/geometry.hpp>)**
   
- <b> Author By Yaghyavardhan Singh Khangarot </b>
+ <b> Authored By Yaghyavardhan Singh Khangarot </b>
